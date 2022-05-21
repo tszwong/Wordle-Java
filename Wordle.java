@@ -13,6 +13,8 @@ import java.util.*;
 public class Wordle {
     // the name of a file containing a collection of English words, one word per line
     public static final String WORD_FILE = "words.txt";
+    private static boolean True;
+    private static boolean False;
 
     /*
      * printWelcome - prints the message that greets the user at the beginning of the game
@@ -49,7 +51,7 @@ public class Wordle {
     public static String readGuess(int guessNum, Scanner console) {
         String guess;
         do {
-            System.out.print("guess " + guessNum + ": \n");
+            System.out.print("guess " + guessNum + ": ");
             guess = console.next();
         } while (! isValidGuess(guess));
 
@@ -57,48 +59,46 @@ public class Wordle {
     }
 
     /**** ADD YOUR METHODS FOR TASK 1 HERE ****/
-     public static boolean includes( String s, char c){
-        // takes two parameters: an arbitrary String object s followed by a single char c. The method should return the boolean literal true if c is found somewhere in s, and it should return the boolean literal false otherwise
-        if (s.indexOf(c)!= -1){
-            return true;
-        }else{
-            return false;
+    public static boolean includes (String s, char c) {
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == c) {
+                return true;
+            } 
         }
-    }
-     public static boolean isAlpha(String s) {
-         //takes an arbitrary String object s as its only parameter and returns true if all of the characters in s are letters of the alphabet, and returns false otherwise.
-         for (int i = 0; i < s.length(); i++){
-            if (Character.isAlphabetic(s.charAt(i))){
-                
-            }
-            else {
-                return false ;
-            }
-        }
-        return true ; 
-     }
-
-     public static int numOccur(char c, String s) {
-         //takes two parameters: a single char c followed by an arbitrary String object s and counts and return the number of times that c occurs in s
-        int num_times = 0;
-        for (int i = 0; i < s.length(); i++){
-            if (s.charAt(i) == c){
-                num_times += 1;
-            }
-        }
-        return num_times;
-    }
-    public static int numInSamePosn(char c, String s1, String s2){
-        //takes three parameters: a single char c followed by two String objects s1 and s2 that have the same length; counts and returns the number of times that c occurs in the same position in both s1 and s2
-        int num_times = 0;
-        for (int i = 0; i < s1.length(); i++){
-            if (s1.charAt(i) == s2.charAt(i) && s1.charAt(i) == c && s2.charAt(i) == c){
-                return num_times += 1;
-            }
-        }
-        return num_times;
+        return false;
     }
 
+    public static boolean isAlpha (String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isAlphabetic(s.charAt(i)) == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static int numOccur (char c, String s) {
+        int count = 0;
+        if (includes(s, c) == false) {
+            return count;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == c) {
+                count += 1;
+            }
+        }
+        return count;
+    }
+
+    public static int numInSamePosn (char c, String s1, String s2) {
+        int count = 0;
+        for (int i = 0; i < s1.length(); i++) {
+            if (s1.charAt(i) == s2.charAt(i) && s1.charAt(i) == c) {
+                count += 1;
+            }
+        }
+        return count;
+    }
 
     /*
      * TASK 2: Implement this method
@@ -107,49 +107,48 @@ public class Wordle {
      * if it is a valid guess for Wordle, and false otherwise
      */
     public static boolean isValidGuess(String guess) {
-        //takes an arbitrary String object guess as its only parameter and returns a boolean value
         if (guess.length() != 5) {
             System.out.println("Your guess must be 5 letters long.");
             return false;
-        }
-        if (isAlpha(guess) != true){
+        } else if (isAlpha(guess) == false) {
             System.out.println("Your guess must only contain letters of the alphabet.");
             return false;
+        } else {
+            return true;
         }
-
-        return true;
     }
 
     /**** ADD YOUR METHOD FOR TASKS 3 and 5 HERE. ****/
-
-    public static boolean processGuess(String guess, String mystery){
-        //two parameters: a 5-character String object guess representing a guess made by the user and a 5-character String object mystery representing the “mystery” word that the user is trying to guess; provide feedback to the user about how guess compares to mystery by printing the appropriate sequence of characters;return true if guess is equal to mystery and false otherwise
-        System.out.print("  ");
+    public static boolean processGuess (String guess, String mystery) {
+        
         if (guess.equals(mystery)){
+            System.out.print("  ");
             for (int i = 0; i < guess.length(); i++){
                 char guess_letter = guess.charAt(i);
                 System.out.print(guess_letter + " ");
             }
             return true;
         } else {
-            for (int i = 0; i < guess.length(); i++){
-                if (guess.charAt(i) == mystery.charAt(i)){
-                    System.out.print(guess.charAt(i) + " ");
-                } else if (numOccur(guess.charAt(i), mystery) > 0){
-                    if (numOccur(mystery.charAt(i), mystery) >= numOccur(guess.charAt(i), guess))
-                        System.out.print("[" + guess.charAt(i) + "]" + " ");
-                    else{
+            if (isValidGuess(guess) == true) {
+                System.out.print("  ");
+                for (int i = 0; i < guess.length(); i++){
+                    if (guess.charAt(i) == mystery.charAt(i)){
+                        System.out.print(guess.charAt(i) + " ");
+                    } else if (includes(mystery, guess.charAt(i))){
+                        if (numOccur(mystery.charAt(i), mystery) >= numOccur(guess.charAt(i), guess))
+                            System.out.print("[" + guess.charAt(i) + "]" + " ");
+                        else{
+                            System.out.print("_" + " ");
+                        }
+                    } else {
                         System.out.print("_" + " ");
                     }
-                } else {
-                    System.out.print("_" + " ");
                 }
             }
         }
 
         System.out.println();
         return false;
-
     }
 
     
@@ -165,20 +164,19 @@ public class Wordle {
         String mystery = words.getRandomWord();
         
         /*** TASK 4: Implement the rest of the main method below. ***/
-
-        for (int i = 1; i < 7; i++){
-            String guess = readGuess(i, console);
-            if (processGuess(guess, mystery) == true){
-                System.out.println("\nCongrats! You guessed it!");
-                i = 7;
+        for (int i = 0; i <= 6; i++) {
+            String guess = console.nextLine();
+            if (processGuess(guess, mystery) == true) {
+                System.out.println("\n\nCongrats! You guessed it!");
+                break;
             }
-            if (i == 6) {
-                System.out.println();
-                System.out.println();
-                System.out.println("Sorry! Better luck next time!");
-                System.out.println("The word was " + mystery + ".");
+            if (i == 6 && processGuess(guess, mystery) == false) {
+                System.out.print("\n\n");
+                System.out.println("Sorry! Better luck next time!\n The word was " + mystery + ".");
+                break;
             }
         }
+
 
         console.close();
     }
